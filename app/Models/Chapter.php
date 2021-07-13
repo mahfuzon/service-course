@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Chapter extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['name', 'course_id'];
+
+    public function lesson()
+    {
+        return $this->hasMany(Lesson::class)->orderBy('id', 'ASC');
+    }
 }

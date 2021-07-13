@@ -8,4 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name', 'certificate', 'thumbnail', 'type',
+        'status', 'price', 'level', 'description', 'mentor_id'
+    ];
+
+    public function mentor()
+    {
+        return $this->belongsTo(Mentor::class);
+    }
+
+    public function chapter(){
+        return $this->hasMany(Chapter::class)->orderBy('id', 'ASC');
+    }
+
+    public function image(){
+        return $this->hasMany(ImageCourse::class)->orderBy('id', 'DESC');
+    }
 }

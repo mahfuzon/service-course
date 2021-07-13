@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Mentor extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['name', 'profile', 'email', 'profession'];
 }
