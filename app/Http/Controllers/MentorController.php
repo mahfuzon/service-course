@@ -105,7 +105,7 @@ class MentorController extends Controller
      * @param  \App\Models\Mentor  $mentor
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Mentor $mentor)
+    public function update(Request $request, $id)
     {
         $rules = [
             "name" => "required|string",
@@ -123,6 +123,15 @@ class MentorController extends Controller
                 "status" => "error",
                 "message" => $validator->errors()
             ]);
+        }
+
+        $mentor = Mentor::find($id);
+
+        if (!$mentor) {
+            return response()->json([
+                "status" => "error",
+                "message" => "data not found"
+            ], 404);
         }
 
         $mentor->update($data);

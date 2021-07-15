@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Mentor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
 {
@@ -35,7 +37,43 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+
+        $rules = [
+            "name" => "required|string",
+            "certificate" => "required|boolean",
+            "thumbnail" => "string|url",
+            "type" => "required|in:free,premium",
+            "status" => "required|in:draft,published",
+            "price" => "integer",
+            "level" => "required|in:all-level,beginner,intermediate,advance",
+            "mentor_id" => "required|integer",
+            "description" => "string"
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "status" => "error",
+                "message" => $validator->errors()
+            ]);
+        }
+
+        $mentor = Mentor::find($request->mentor_id);
+        if (!$mentor) {
+            return response()->json([
+                "status" => "error",
+                "message" => "mentor not found"
+            ]);
+        }
+
+        $course = Course::create($data);
+
+        return response()->json([
+            "status" => "success",
+            "data" => $course
+        ]);
     }
 
     /**

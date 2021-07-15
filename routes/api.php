@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MentorController;
+use App\Http\Controllers\CourseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/mentors', [MentorController::class, 'store']);
-Route::put('/mentors/{mentor}', [MentorController::class, 'update']);
+Route::put('/mentors/{id}', [MentorController::class, 'update']);
 Route::get('/mentors/{id}', [MentorController::class, 'show']);
 Route::get('/mentors', [MentorController::class, 'index']);
 Route::delete('/mentors/{id}', [MentorController::class, 'destroy']);
+
+Route::post('/courses', [CourseController::class, 'store']);
