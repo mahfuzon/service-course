@@ -94,7 +94,30 @@ class MentorController extends Controller
      */
     public function update(Request $request, Mentor $mentor)
     {
-        //
+        $rules = [
+            "name" => "required|string",
+            "profile" => "required|url",
+            "profession" => "required|string",
+            "email" => "required|email"
+        ];
+
+        $data = $request->all();
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "status" => "error",
+                "message" => $validator->errors()
+            ]);
+        }
+
+        $mentor->update($data);
+
+        return response()->json([
+            "status" => "success",
+            "data" => $mentor
+        ]);
     }
 
     /**
