@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mentor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class MentorController extends Controller
 {
@@ -14,7 +15,9 @@ class MentorController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            "data" => "helloworld"
+        ]);
     }
 
     /**
@@ -35,7 +38,29 @@ class MentorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        $rules = [
+            "name" => "required|string",
+            "profile" => "required|url",
+            "profession" => "required|string",
+            "email" => "required|email"
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "status" => "error",
+                "message" => $validator->errors()
+            ]);
+        }
+
+        $mentor = Mentor::create($data);
+
+        return response()->json([
+            "status" => "success",
+            "data" => $mentor
+        ]);
     }
 
     /**
