@@ -15,8 +15,10 @@ class MentorController extends Controller
      */
     public function index()
     {
+        $mentors = Mentor::all();
         return response()->json([
-            "data" => "helloworld"
+            "status" => "success",
+            "data" => $mentors
         ]);
     }
 
@@ -69,9 +71,20 @@ class MentorController extends Controller
      * @param  \App\Models\Mentor  $mentor
      * @return \Illuminate\Http\Response
      */
-    public function show(Mentor $mentor)
+    public function show($id)
     {
-        //
+        $mentor = Mentor::find($id);
+        
+        if (!$mentor) {
+            return response()->json([
+                "status" => "error",
+                "message" => "data not found"
+            ], 404);
+        }
+        return response()->json([
+            "status" => "success",
+            "data" => $mentor
+        ]);
     }
 
     /**

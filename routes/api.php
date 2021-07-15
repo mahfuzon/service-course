@@ -21,3 +21,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('/mentors', [MentorController::class, 'store']);
 Route::put('/mentors/{mentor}', [MentorController::class, 'update']);
+Route::get('/mentors/{id}', [MentorController::class, 'show']);
+Route::get('/mentors', [MentorController::class, 'index']);
