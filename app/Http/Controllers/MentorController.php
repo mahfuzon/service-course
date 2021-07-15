@@ -74,7 +74,7 @@ class MentorController extends Controller
     public function show($id)
     {
         $mentor = Mentor::find($id);
-        
+
         if (!$mentor) {
             return response()->json([
                 "status" => "error",
@@ -139,8 +139,22 @@ class MentorController extends Controller
      * @param  \App\Models\Mentor  $mentor
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Mentor $mentor)
+    public function destroy($id)
     {
-        //
+        $mentor = Mentor::find($id);
+
+        if (!$mentor) {
+            return response()->json([
+                "status" => "error",
+                "message" => "data not found"
+            ], 404);
+        }
+
+        $mentor->delete();
+
+        return response()->json([
+            "status" => "success",
+            "message" => "data deleted"
+        ]);
     }
 }
