@@ -27,3 +27,4 @@ Route::get('/mentors', [MentorController::class, 'index']);
 Route::delete('/mentors/{id}', [MentorController::class, 'destroy']);
 
 Route::post('/courses', [CourseController::class, 'store']);
+Route::put("/courses/{id}", [CourseController::class, 'update']);

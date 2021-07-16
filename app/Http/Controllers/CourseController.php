@@ -105,9 +105,57 @@ class CourseController extends Controller
      * @param  \App\Models\Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Course $course)
+    public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+
+        $rules = [
+            "name" => "string",
+            "certificate" => "boolean",
+            "thumbnail" => "string|url",
+            "type" => "in:free,premium",
+            "status" => "in:draft,published",
+            "price" => "integer",
+            "level" => "in:all-level,beginner,intermediate,advance",
+            "mentor_id" => "integer",
+            "description" => "string"
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "status" => "error",
+                "message" => $validator->errors()
+            ], 400);
+        }
+
+        $course = Course::find($id);
+        if (!$course) {
+            return response()->json([
+                "status" => "error",
+                "message" => "course not found"
+            ], 404);
+        }
+
+        $mentor_id = $request->mentor_id;
+        if ($mentor_id) {
+            $mentor = Mentor::find($mentor_id);
+            if (!$mentor) {
+                return response()->json([
+                    "status" => "error",
+                    "message" => "mentor not found"
+                ], 404);
+            }
+        }
+
+
+        $course->update($data);
+
+        return response()->json([
+            "status" => "success",
+            "data" => $course
+        ]);
     }
 
     /**

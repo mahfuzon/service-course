@@ -10,4 +10,9 @@ class ImageCourse extends Model
     use HasFactory;
 
     protected $fillable = ['course_id', 'image'];
+
+    protected $casts = [
+        "created_at" => 'datetime: Y-m-d H:m:s',
+        "updated_at" => 'datetime: Y-m-d H:m:s'
+    ];
 }

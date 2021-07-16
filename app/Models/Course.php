@@ -26,4 +26,9 @@ class Course extends Model
     public function image(){
         return $this->hasMany(ImageCourse::class)->orderBy('id', 'DESC');
     }
+
+    protected $casts = [
+        "created_at" => 'datetime: Y-m-d H:m:s',
+        "updated_at" => 'datetime: Y-m-d H:m:s'
+    ];
 }
