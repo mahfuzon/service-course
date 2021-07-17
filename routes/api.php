@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MentorController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\ChapterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,3 +31,5 @@ Route::post('/courses', [CourseController::class, 'store']);
 Route::put("/courses/{id}", [CourseController::class, 'update']);
 Route::get('/courses', [CourseController::class, 'index']);
 Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
+
+Route::post('/chapters', [ChapterController::class, "store"]);
