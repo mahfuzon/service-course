@@ -97,9 +97,49 @@ class ChapterController extends Controller
      * @param  \App\Models\Chapter  $chapter
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Chapter $chapter)
+    public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            "name" => "string",
+            "chapter_id" => "integer"
+        ];
+
+        $data = $request->all();
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "status" => "error",
+                "message" => $validator->errors()
+            ], 400);
+        }
+
+        $chapter = Chapter::find($id);
+        if (!$chapter) {
+            return response()->json([
+                "status" => "error",
+                "message" => "chapter not found"
+            ], 404);
+        }
+
+        $course_id = $request->input('course_id');
+        if ($course_id) {
+            $course = Course::find($course_id);
+            if (!$course) {
+                return response()->json([
+                    "status" => "error",
+                    "message" => "course not found"
+                ], 404);
+            }
+        }
+
+        $chapter->update($data);
+
+        return response()->json([
+            "status" => "success",
+            "data" => $chapter
+        ]);
     }
 
     /**
