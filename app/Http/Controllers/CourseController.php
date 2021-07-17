@@ -14,9 +14,26 @@ class CourseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $courses = Course::query();
+
+        $name = $request->query('name');
+        $status = $request->query('status');
+
+        $courses->when($name, function ($query) use ($name) {
+            return $query->whereRaw("name LIKE '%" . strtolower($name) . "%'");
+        });
+
+        $courses->when($status, function ($query) use ($status) {
+            return $query->where("status", '=' . $status);
+        });
+
+
+        return response([
+            "status" => "success",
+            "data" => $courses->paginate(10)
+        ]);
     }
 
     /**
