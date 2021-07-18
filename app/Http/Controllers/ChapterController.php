@@ -84,9 +84,20 @@ class ChapterController extends Controller
      * @param  \App\Models\Chapter  $chapter
      * @return \Illuminate\Http\Response
      */
-    public function show(Chapter $chapter)
+    public function show($id)
     {
-        //
+        $chapter = Chapter::find($id);
+        if (!$chapter) {
+            return response()->json([
+                "status" => "error",
+                "message" => "chapter not found"
+            ], 404);
+        }
+
+        return response()->json([
+            "status" => "success",
+            "data" => $chapter
+        ]);
     }
 
     /**
@@ -158,8 +169,20 @@ class ChapterController extends Controller
      * @param  \App\Models\Chapter  $chapter
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Chapter $chapter)
+    public function destroy($id)
     {
-        //
+        $chapter = Chapter::find($id);
+        if (!$chapter) {
+            return response()->json([
+                "status" => "error",
+                "message" => "chapter not found"
+            ], 404);
+        }
+
+        $chapter->delete();
+        return response()->json([
+            "status" => "success",
+            "message" => "course deleted"
+        ]);
     }
 }

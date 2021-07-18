@@ -35,3 +35,5 @@ Route::delete('/courses/{id}', [CourseController::class, 'destroy']);
 Route::post('/chapters', [ChapterController::class, "store"]);
 Route::put('/chapters/{id}', [ChapterController::class, 'update']);
 Route::get('/chapters', [ChapterController::class, 'index']);
+Route::get('/chapters/{id}', [ChapterController::class, 'show']);
+Route::delete('/chapters/{id}', [ChapterController::class, 'destroy']);
