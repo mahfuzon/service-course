@@ -16,9 +16,19 @@ class LessonController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $lessons = Lesson::query();
+        $chapter_id = $request->query('chapter_id');
+
+        $lessons->when($chapter_id, function ($query, $chapter_id) {
+            return $query->where('chapter_id', $chapter_id);
+        });
+
+        return response()->json([
+            "status" => "success",
+            "data" => $lessons->paginate(10)
+        ]);
     }
 
     /**
@@ -77,9 +87,21 @@ class LessonController extends Controller
      * @param  \App\Models\Lesson  $lesson
      * @return \Illuminate\Http\Response
      */
-    public function show(Lesson $lesson)
+    public function show($id)
     {
-        //
+        $lesson = Lesson::find($id);
+
+        if (!$lesson) {
+            return response()->json([
+                "status" => "error",
+                "message" => "lesson not found"
+            ], 404);
+        }
+
+        return response()->json([
+            "status" => "success",
+            "data" => $lesson
+        ]);
     }
 
     /**
