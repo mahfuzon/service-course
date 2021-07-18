@@ -14,9 +14,19 @@ class ChapterController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $chapters = Chapter::all()->toQuery();
+        $course_id = $request->query('course_id');
+
+        $chapters->when($course_id, function ($query, $course_id) {
+            return $query->where('course_id', $course_id);
+        });
+
+        return response()->json([
+            "status" => "success",
+            "data" => $chapters->paginate(10)
+        ]);
     }
 
     /**
