@@ -122,9 +122,47 @@ class LessonController extends Controller
      * @param  \App\Models\Lesson  $lesson
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Lesson $lesson)
+    public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            "name" => "string",
+            "video" => "string",
+            "chapter_id" => "integer"
+        ];
+
+        $data = $request->all();
+
+        $validator = Validator::make($data, $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                "status" => "error",
+                "message" => $validator->errors()
+            ], 400);
+        }
+
+        $lesson = Lesson::find($id);
+        if (!$lesson) {
+            return response()->json([
+                "status" => "error",
+                "message" => "lesson not found"
+            ], 404);
+        }
+
+        if ($request->has('chapter_id')) {
+            $chapter = Chapter::find($request->input('chapter_id'));
+            if (!$chapter) {
+                return response()->json([
+                    "status" => "error",
+                    "message" => "chapter not found"
+                ], 404);
+            }
+        }
+
+        $lesson->update($data);
+        return response()->json([
+            "status" => "success",
+            "data" => $lesson
+        ]);
     }
 
     /**
@@ -133,8 +171,22 @@ class LessonController extends Controller
      * @param  \App\Models\Lesson  $lesson
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Lesson $lesson)
+    public function destroy($id)
     {
-        //
+        $lesson = Lesson::find($id);
+
+        if (!$lesson) {
+            return response()->json([
+                "status" => "error",
+                "message" => "lesson not found"
+            ], 404);
+        }
+
+        $lesson->delete();
+
+        return response()->json([
+            "status" => "success",
+            "message" => "lesson deleted"
+        ], 404);
     }
 }
