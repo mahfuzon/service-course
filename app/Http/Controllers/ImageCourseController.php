@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\ImageCourse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ImageCourseController extends Controller
 {
@@ -35,7 +37,36 @@ class ImageCourseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+
+        $rules = [
+            "image" => "required|url",
+            "course_id" => 'required|integer'
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => "error",
+                "message" => $validator->errors()
+            ], 400);
+        }
+
+        $course = Course::find($request->input('course_id'));
+        if (!$course) {
+            return response()->json([
+                "status" => "error",
+                "message" => "course not found"
+            ], 404);
+        }
+
+        $imageCourse = ImageCourse::create($data);
+
+        return response()->json([
+            "status" => "success",
+            "data" => $imageCourse
+        ]);
     }
 
     /**
@@ -78,8 +109,21 @@ class ImageCourseController extends Controller
      * @param  \App\Models\ImageCourse  $imageCourse
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ImageCourse $imageCourse)
+    public function destroy($id)
     {
-        //
+        $imageCourse = ImageCourse::find($id);
+
+        if (!$imageCourse) {
+            return response()->json([
+                "status" => "error",
+                "message" => "image not found"
+            ], 404);
+        }
+
+        $imageCourse->delete();
+        return response()->json([
+            "status" => "success",
+            "message" => "image deleted"
+        ]);
     }
 }
