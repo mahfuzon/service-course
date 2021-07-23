@@ -56,3 +56,4 @@ Route::get('/my-courses', [MyCourseController::class, 'index']);
 
 Route::post('/reviews', [ReviewController::class, 'store']);
 Route::put('/reviews/{id}', [ReviewController::class, "update"]);
+Route::delete('/reviews/{id}', [ReviewController::class, "destroy"]);
