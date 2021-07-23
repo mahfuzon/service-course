@@ -55,3 +55,4 @@ Route::post('/my-courses', [MyCourseController::class, 'store']);
 Route::get('/my-courses', [MyCourseController::class, 'index']);
 
 Route::post('/reviews', [ReviewController::class, 'store']);
+Route::put('/reviews/{id}', [ReviewController::class, "update"]);

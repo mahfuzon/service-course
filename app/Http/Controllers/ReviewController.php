@@ -136,9 +136,38 @@ class ReviewController extends Controller
      * @param  \App\Models\Review  $review
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Review $review)
+    public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'rate' => 'integer|min:1|:max:5',
+            'note' => 'string'
+        ];
+
+        $data = $request->all();
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "status" => "error",
+                "message" => $validator->errors()
+            ], 400);
+        }
+
+        $review = Review::find($id);
+        if (!$review) {
+            return response()->json([
+                "status" => "error",
+                "message" => "review not found"
+            ], 404);
+        }
+
+        $review->update($data);
+
+        return response()->json([
+            "status" => "success",
+            "data" => $review
+        ]);
     }
 
     /**
