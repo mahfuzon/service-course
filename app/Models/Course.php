@@ -19,11 +19,18 @@ class Course extends Model
         return $this->belongsTo(Mentor::class);
     }
 
-    public function chapter(){
+    public function chapter()
+    {
         return $this->hasMany(Chapter::class)->orderBy('id', 'ASC');
     }
 
-    public function image(){
+    public function review()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function image()
+    {
         return $this->hasMany(ImageCourse::class)->orderBy('id', 'DESC');
     }
 

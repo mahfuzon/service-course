@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\MyCourse;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -87,6 +88,16 @@ class ReviewController extends Controller
                 'status' => $user['status'],
                 'message' => $user['message']
             ], ($user['http_code']) ? $user['http_code'] : 404);
+        }
+
+        $isTaked = MyCourse::where('course_id', $request->input('course_id'))
+            ->where('user_id', $request->input('user_id'));
+
+        if ($isTaked->count() == 0) {
+            return response()->json([
+                "status" => "error",
+                "message" => "You haven't taken this course"
+            ], 400);
         }
 
         $isExist = Review::where('course_id', $request->input('course_id'))
