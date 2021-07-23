@@ -122,7 +122,7 @@ class MentorController extends Controller
             return response()->json([
                 "status" => "error",
                 "message" => $validator->errors()
-            ]);
+            ], 400);
         }
 
         $mentor = Mentor::find($id);
