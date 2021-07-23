@@ -18,12 +18,38 @@ class MyCourseController extends Controller
         try {
             $response = Http::timeout(10)->get('http://localhost:5000/users/' . $user_id);
             $data = $response->json();
-            $data['http_code'] = $response->getStatusCode();
+            $data['http_code'] = $response->status();
             return $data;
         } catch (\Throwable $th) {
             return [
                 "status" => "error",
-                "status code" => 500,
+                "status_code" => 500,
+                "message" => "service unavailable"
+            ];
+        }
+    }
+
+    public function getUsers($user_id = [])
+    {
+        try {
+            if (count($user_id) == 0) {
+                return response()->json([
+                    "status" => "success",
+                    'http_code' => 200,
+                    "data" => []
+                ]);
+            }
+
+            $response = Http::timeout(10)->get('http://localhost:5000/users/' . $user_id, [
+                'user_id[]' => $user_id
+            ]);
+            $data = $response->json();
+            $data['http_code'] = $response->status();
+            return $data;
+        } catch (\Throwable $th) {
+            return [
+                "status" => "error",
+                "status_code" => 500,
                 "message" => "service unavailable"
             ];
         }
@@ -33,9 +59,19 @@ class MyCourseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $myCourse = MyCourse::query()->with('course');
+        $userId = $request->query('user_id');
+
+        $myCourse->when($userId, function ($query, $userId) {
+            return $query->where('user_id', $userId);
+        });
+
+        return response()->json([
+            "status" => "success",
+            "data" => $myCourse->get()
+        ]);
     }
 
     /**
@@ -87,7 +123,7 @@ class MyCourseController extends Controller
             return response()->json([
                 'status' => $user['status'],
                 'message' => $user['message']
-            ], $user['http_code']);
+            ], 404);
         }
 
         $isExist = MyCourse::where('course_id', $course_id)
