@@ -7,7 +7,6 @@ use App\Models\MyCourse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
-use PhpParser\Node\Stmt\TryCatch;
 
 class MyCourseController extends Controller
 {
