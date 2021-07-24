@@ -3,14 +3,41 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Chapter;
 use App\Models\Mentor;
 use App\Models\MyCourse;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 
 class CourseController extends Controller
 {
+    public function getUsers($user_ids = [])
+    {
+        try {
+            if (count($user_ids) === 0) {
+                return response()->json([
+                    "status" => "success",
+                    'http_code' => 200,
+                    "data" => []
+                ]);
+            }
+
+            $response = Http::timeout(10)->get('http://localhost:5000/users/', [
+                'user_id[]' => $user_ids
+            ]);
+            $data = $response->json();
+            $data['http_code'] = $response->status();
+            return $data;
+        } catch (\Throwable $th) {
+            return [
+                "status" => "error",
+                "status_code" => 500,
+                "message" => "service unavailable"
+            ];
+        }
+    }
     /**
      * Display a listing of the resource.
      *
@@ -103,7 +130,12 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        $course = Course::find($id);
+        $course = Course::with('chapter')
+            ->with('chapter')
+            ->with('mentor')
+            ->with('image')
+            ->with('chapter.lesson')
+            ->find($id);
         if (!$course) {
             return response()->json([
                 "status" => "error",
@@ -112,8 +144,25 @@ class CourseController extends Controller
         }
 
         $total_student = MyCourse::where('course_id', $id)->count();
-        $course['reviews'] = $course->review()->get()->toArray();
+        $reviews = Review::where('course_id', $id)->get()->toArray();
+        if (count($reviews) > 0) {
+            $user_ids = array_column($reviews, 'user_id');
+            $users = $this->getUsers($user_ids);
+            if ($users['status'] == 'error') {
+                $reviews = [];
+            } else {
+                foreach ($reviews as $key => $review) {
+                    $userIndex = array_search($review['user_id'], array_column($users['data'], 'id'));
+                    $reviews[$key]['users'] = $users['data'][$userIndex];
+                }
+            }
+        }
+
+        $totalVideos = Chapter::where('course_id', $id)->withCount('lesson')->get()->toArray();
+        $finalTotalVideos = array_sum(array_column($totalVideos, 'lesson_count'));
         $course['total_student'] = $total_student;
+        $course['reviews'] = $reviews;
+        $course['tottal_videos'] = $finalTotalVideos;
 
         return response()->json([
             'status' => "success",
