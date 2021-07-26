@@ -55,7 +55,7 @@ class CourseController extends Controller
         });
 
         $courses->when($status, function ($query) use ($status) {
-            return $query->where("status", '=' . $status);
+            return $query->where("status", $status);
         });
 
 
