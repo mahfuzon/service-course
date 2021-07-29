@@ -16,7 +16,7 @@ class ChapterController extends Controller
      */
     public function index(Request $request)
     {
-        $chapters = Chapter::all()->toQuery();
+        $chapters = Chapter::query();
         $course_id = $request->query('course_id');
 
         $chapters->when($course_id, function ($query, $course_id) {
@@ -25,7 +25,7 @@ class ChapterController extends Controller
 
         return response()->json([
             "status" => "success",
-            "data" => $chapters->paginate(10)
+            "data" => $chapters
         ]);
     }
 
