@@ -27,7 +27,7 @@ class LessonController extends Controller
 
         return response()->json([
             "status" => "success",
-            "data" => $lessons->paginate(10)
+            "data" => $lessons->get()
         ]);
     }
 
