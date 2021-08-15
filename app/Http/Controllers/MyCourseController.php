@@ -125,6 +125,7 @@ class MyCourseController extends Controller
             ], 404);
         }
 
+
         $isExist = MyCourse::where('course_id', $course_id)
             ->where('user_id', $user_id)->get();
 
@@ -135,12 +136,37 @@ class MyCourseController extends Controller
             ], 409);
         }
 
-        $myCourse = MyCourse::create($data);
+        if ($course->type === 'premium') {
+            if ($course->price === 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Price can\'t be 0'
+                ]);
+            }
+            $order = postOrder([
+                'user' => $user['data'],
+                'course' => $course->toArray()
+            ]);
 
-        return response()->json([
-            "status" => "success",
-            "data" => $myCourse
-        ]);
+            if ($order['status'] === 'error') {
+                return  response()->json([
+                    'status' => $order['status'],
+                    'message' => $order['message'],
+                ], $order['http_code']);
+            }
+
+            return response()->json([
+                'status' => $order['status'],
+                'data' => $order['data']
+            ]);
+        } else {
+            $myCourse = MyCourse::create($data);
+
+            return response()->json([
+                "status" => "success",
+                "data" => $myCourse
+            ]);
+        }
     }
 
     public function createPremiumAccess(Request $request)
